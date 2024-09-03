@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:personal_money_management_app/db/category/category_db.dart';
 import 'package:personal_money_management_app/screens/category/expens_category_list.dart';
 import 'package:personal_money_management_app/screens/category/income_category_list.dart';
 
@@ -11,10 +12,14 @@ class ScreenCategory extends StatefulWidget {
 
 class _ScreenCategoryState extends State<ScreenCategory> with SingleTickerProviderStateMixin {
  late TabController _tabController;
- @override
+@override
   void initState() {
-    _tabController = TabController(length: 2, vsync:this);
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    CategoryDb().getCategories().then((value) {
+      print('Categories retrieved:');
+      print(value.toString());
+    });
   }
   @override
   Widget build(BuildContext context) {

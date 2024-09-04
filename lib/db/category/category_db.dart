@@ -3,15 +3,16 @@ import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:personal_money_management_app/models/category/category_model.dart';
 
-
 const CATEGORY_DB_NAME = 'category-database';
+
 abstract class CategoryDbFunctions {
-  Future <List<CategoryModel>>getCategories();
+  Future<List<CategoryModel>> getCategories();
   Future<void> insertCategory(CategoryModel value);
+  Future<void> deleteCategory(String categoryID);
 }
 
 class CategoryDb implements CategoryDbFunctions {
- // Private constructor
+  // Private constructor for Singleton pattern
   CategoryDb._internal();
 
   // Singleton instance
@@ -22,39 +23,41 @@ class CategoryDb implements CategoryDbFunctions {
     return instance;
   }
 
-ValueNotifier<List<CategoryModel>> incomeCategoryListListener = ValueNotifier([]);
-ValueNotifier<List<CategoryModel>> expenseCategoryListListener = ValueNotifier([]);
+  ValueNotifier<List<CategoryModel>> incomeCategoryListListener = ValueNotifier([]);
+  ValueNotifier<List<CategoryModel>> expenseCategoryListListener = ValueNotifier([]);
 
   @override
   Future<void> insertCategory(CategoryModel value) async {
-  final _categoryDB = await Hive.openBox<CategoryModel>(CATEGORY_DB_NAME);
-  await  _categoryDB.add(value);
-  refreshUI();
-  }
-  
-  @override
-  Future<List<CategoryModel>> getCategories() async{
     final _categoryDB = await Hive.openBox<CategoryModel>(CATEGORY_DB_NAME);
-    return _categoryDB.values.toList();
-    
+    await _categoryDB.put(value.id, value);
+    refreshUI();
   }
 
-  Future<void> refreshUI() async{
+  @override
+  Future<List<CategoryModel>> getCategories() async {
+    final _categoryDB = await Hive.openBox<CategoryModel>(CATEGORY_DB_NAME);
+    return _categoryDB.values.toList();
+  }
+
+  Future<void> refreshUI() async {
     final _allCategories = await getCategories();
     incomeCategoryListListener.value.clear();
     expenseCategoryListListener.value.clear();
-   await Future.forEach(_allCategories,
-    (CategoryModel category){
- if(category.type == CategoryType.income){
-  incomeCategoryListListener.value.add(category);
-
- } else{
-  expenseCategoryListListener.value.add(category);
- }
-    }
-    );
+    await Future.forEach(_allCategories, (CategoryModel category) {
+      if (category.type == CategoryType.income) {
+        incomeCategoryListListener.value.add(category);
+      } else {
+        expenseCategoryListListener.value.add(category);
+      }
+    });
     incomeCategoryListListener.notifyListeners();
     expenseCategoryListListener.notifyListeners();
   }
 
+  @override
+  Future<void> deleteCategory(String categoryID) async {
+    final _categoryDb = await Hive.openBox<CategoryModel>(CATEGORY_DB_NAME);
+    await _categoryDb.delete(categoryID);
+    refreshUI();
+  }
 }

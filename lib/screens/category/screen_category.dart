@@ -16,10 +16,7 @@ class _ScreenCategoryState extends State<ScreenCategory> with SingleTickerProvid
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    CategoryDb().getCategories().then((value) {
-      print('Categories retrieved:');
-      print(value.toString());
-    });
+    CategoryDb().refreshUI();
   }
   @override
   Widget build(BuildContext context) {
@@ -39,7 +36,7 @@ class _ScreenCategoryState extends State<ScreenCategory> with SingleTickerProvid
              controller: _tabController,
             children: const [
              IncomeCategoryList(),
-             ExpensCategoryList(),
+            ExpenseCategoryList(),
           
             ],
           ),

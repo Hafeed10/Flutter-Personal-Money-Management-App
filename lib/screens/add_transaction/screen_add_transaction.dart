@@ -16,6 +16,12 @@ class _ScreenAddTransactionState extends State<ScreenAddTransaction> {
  CategoryType? _selectedCategorytype;
  CategoryModel? _selectedCategoryModel;
 
+ String ? _categoryID;
+@override
+  void initState() {
+    _selectedCategorytype = CategoryType.income;
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,9 +76,13 @@ class _ScreenAddTransactionState extends State<ScreenAddTransaction> {
                     Row(
                       children: [
                         Radio(
-                          value: false,
-                           groupValue:CategoryType.income,
+                          value: CategoryType.income,
+                           groupValue:_selectedCategorytype,
                             onChanged: (newValue){
+                              setState(() {
+                              _selectedCategorytype = CategoryType.income;
+                              _categoryID = null;
+                              });
                         
                             },
                             ),
@@ -84,9 +94,13 @@ class _ScreenAddTransactionState extends State<ScreenAddTransaction> {
                      Row(
                       children: [
                         Radio(
-                          value: false,
-                           groupValue:CategoryType.expense,
+                          value: CategoryType.expense,
+                           groupValue:_selectedCategorytype,
                             onChanged: (newValue){
+                              setState(() {
+                              _selectedCategorytype = CategoryType.expense;
+                              _categoryID = null;
+                              });
                         
                             },
                             ),
@@ -98,8 +112,13 @@ class _ScreenAddTransactionState extends State<ScreenAddTransaction> {
                 //Category Dropdown button
                 DropdownButton(
                   hint: Text('Select Category'),
-                //  value:selectdValue,
-                items: CategoryDb().expenseCategoryListListener.value.map((e){
+                 value: _categoryID,
+                items:(
+                  _selectedCategorytype == CategoryType.income?
+                   CategoryDb().incomeCategoryListListener 
+                   : CategoryDb().expenseCategoryListListener)
+                   .value
+                   .map((e){
                   return DropdownMenuItem(
                     value:e.id,
                     child: Text(e.name),
@@ -107,6 +126,10 @@ class _ScreenAddTransactionState extends State<ScreenAddTransaction> {
                 }).toList(),
                  onChanged: (selectdValue){
                   print(selectdValue);
+                  setState(() {
+                  _categoryID = selectdValue;
+                    
+                  });
                  }
                  ),
 

@@ -3,9 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:personal_money_management_app/db/category/category_db.dart';
 import 'package:personal_money_management_app/models/category/category_model.dart';
 
-class ScreenAddTransaction extends StatelessWidget {
+class ScreenAddTransaction extends StatefulWidget {
    static const routeName = 'add-transaction';
   const ScreenAddTransaction({super.key});
+
+  @override
+  State<ScreenAddTransaction> createState() => _ScreenAddTransactionState();
+}
+
+class _ScreenAddTransactionState extends State<ScreenAddTransaction> {
+ DateTime? _selectedDate;
+ CategoryType? _selectedCategorytype;
+ CategoryModel? _selectedCategoryModel;
 
   @override
   Widget build(BuildContext context) {
@@ -16,12 +25,14 @@ class ScreenAddTransaction extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Purpos'
               TextFormField(
                 decoration:const InputDecoration(
                   hintText: 'Purpose'
 
                 ),
               ),
+              //Amount
               TextFormField(
                 keyboardType: TextInputType.number,
                  decoration:const InputDecoration(
@@ -29,23 +40,30 @@ class ScreenAddTransaction extends StatelessWidget {
 
                 ),
               ),
-              TextButton.icon(
-                onPressed: () async{
-                 final _selectedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                   firstDate:DateTime.now().subtract(const Duration(days: 30)) ,
-                    lastDate: DateTime.now(),
-                    );
-                if(_selectedDate == null){
-                  return;
-                }else{
-                  print(_selectedDate.toString());
-                }
-                }, 
-                icon:const Icon(Icons.calendar_today),
-                label: const Text('Select Date'),
-                ),
+
+              //calendar
+           TextButton.icon(
+          onPressed: () async {
+          final pickedDate = await showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime.now().subtract(const Duration(days: 30)),
+            lastDate: DateTime.now(),
+          );
+          if (pickedDate != null) {
+            setState(() {
+              _selectedDate = pickedDate;
+            });
+          }
+        },
+        icon: const Icon(Icons.calendar_today),
+        label: Text(
+          _selectedDate == null
+              ? 'Select Date'
+              : _selectedDate!.toString(),
+        ),
+           ),
+           //Income Radio button
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -61,6 +79,8 @@ class ScreenAddTransaction extends StatelessWidget {
                             Text('Income'),
                       ],
                     ),
+
+                     //Expense Radio button
                      Row(
                       children: [
                         Radio(
@@ -75,6 +95,7 @@ class ScreenAddTransaction extends StatelessWidget {
                     ),
                   ],
                 ),
+                //Category Dropdown button
                 DropdownButton(
                   hint: Text('Select Category'),
                 //  value:selectdValue,
@@ -88,6 +109,8 @@ class ScreenAddTransaction extends StatelessWidget {
                   print(selectdValue);
                  }
                  ),
+
+                 //Submit Button
                 ElevatedButton(
                    onPressed: () {
                      // Your onPressed logic here

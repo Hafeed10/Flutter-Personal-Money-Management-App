@@ -33,33 +33,39 @@ class ScreenTransaction extends StatelessWidget {
             itemCount: newList.length,
             itemBuilder: (ctx, index) {
               final transaction = newList[index];
-
               return Dismissible(
+                confirmDismiss:(direction) async{
+                  return false;
+                } ,
                  key: Key(transaction.id!), // Ensure that id is not null.
-                child: Card(
-                  elevation: 0,
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 30,
-                      child: Text(
-                        parseDate(transaction.date),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 12, color: Colors.white),
+                child: Stack(
+                  children: [
+                    Card(
+                      elevation: 0,
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          radius: 30,
+                          child: Text(
+                            parseDate(transaction.date),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 12, color: Colors.white),
+                          ),
+                          backgroundColor: transaction.type == CategoryType.income
+                              ? Colors.green
+                              : Colors.red,
+                        ),
+                        title: Text('₹ ${transaction.amount.toStringAsFixed(2)}'),
+                        subtitle: Text(transaction.category.name),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            // Deleting the transaction
+                            // TransactionDb.instance.deleteTransaction(transaction.id!);
+                          },
+                        ),
                       ),
-                      backgroundColor: transaction.type == CategoryType.income
-                          ? Colors.green
-                          : Colors.red,
                     ),
-                    title: Text('₹ ${transaction.amount.toStringAsFixed(2)}'),
-                    subtitle: Text(transaction.category.name),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () {
-                        // Deleting the transaction
-                        // TransactionDb.instance.deleteTransaction(transaction.id!);
-                      },
-                    ),
-                  ),
+                  ],
                 ),
               );
             },

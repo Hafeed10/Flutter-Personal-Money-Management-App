@@ -197,7 +197,10 @@ final _amountTextEditingController = TextEditingController();
     
      );
 
-     TransactionDb.instance.addTransaction(_model);
+    await TransactionDb.instance.addTransaction(_model);
+    // ignore: use_build_context_synchronously
+    Navigator.of(context).pop();
+    TransactionDb.instance.refresh();
 
  
 }

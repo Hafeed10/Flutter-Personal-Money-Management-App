@@ -13,7 +13,7 @@ class ScreenHome extends StatelessWidget {
   static ValueNotifier<int> selectedIndexNotifier = ValueNotifier(0);
 
   final List<Widget> _pages = const [
-    ScreenTransction(),
+    ScreenTransaction(),
     ScreenCategory(), // Corrected typo
   ];
 
